@@ -1,0 +1,39 @@
+#server.port=8090
+
+server:
+  port: 8090
+
+spring:
+  thymeleaf:
+    cache: false
+    check-template-location: true
+    prefix: classpath:/templates/
+    suffix: .html
+
+
+# ?? ?? ?? ( ?? info ??? )
+logging:
+  level:
+    root: info
+    itcen:
+      backapi: debug
+
+
+
+# template
+#spring:
+#  mvc:
+#    view:
+#      suffix: .html
+
+
+#spring.datasource.url=
+#spring.datasource.username=
+#spring.datasource.password=
+
+#spring:
+#  datasource:
+#    url:
+#      username:
+#        password:
+
