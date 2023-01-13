@@ -102,7 +102,7 @@ public class PostApiController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deletePost(Long id) {
+    public ResponseEntity<?> deletePost(@PathVariable Long id) {
         log.info(("posts/id DELETE request" ));
 
         boolean flag = postRepository.delete(id);

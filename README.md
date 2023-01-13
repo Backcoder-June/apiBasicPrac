@@ -1,4 +1,4 @@
-[ Spring Boot API ]   
+[ Spring Boot API ]
 - spring io 압축파일 풀 때 하위폴더 생성 체크 해제
   ( 경로 두번 들어가면 관리하기 불편하다 )
 
@@ -137,15 +137,54 @@ a : a
 
 
 
+[ 객체 지향 프로그래밍 ]
+
+객체 는 각자 책임 / 역할을 가지고 있다.
+
+@Controller 는 DB랑 클라 요청처리 받아서 연결해주는
+딱 그 역할만 하고,
+데이터 선처리 후처리 등 작업은
+@Service 단에서 해라!
+@DAO 는 데이터 관리
+
+
+[ DI 변천사 ]
+1. xml
+   <bean id = >
+
+2. Config.class
+   @Configuration
+
+3.@어노테이션
+@Component / @Repository / @Service
+
+
+ctrl alt N => inline 합치기 ( 두줄 한방에 )
+ctrl alt V => inline 분리 ( 두 줄로 만들기 )
+
+[ 페이로드 ]
+: 게시물 등 등록할 때 클라이언트가 보내는 json 정보
+
+
+[ Entity VS DTO ]
+Entity : Table 과 일치시켜야 하므로,
+CRUD 할 때 쓸모없이 많은 데이터를 다 움직여야 한다.
+
+=> DTO ( Form )만들어서 필요한 데이터만 조작하자
+: 실제로 조작할 필요한 데이터들로만 추려서 만든 Entity 의 작은 버전 그릇
+: 또한 클라이언트 단에서 필요하다고 하는 데이터만 뽑아야 하므로 DTO 사용!
+( 변수명을 바꿔서 보내달라던가 / date 양식 다르게 달라던가 )
+
+=> 각 상황에 따라 필요한 DTO 다르게 만들어두면 성능 최적화 가능하긴 함
+: postDTO / postResponseDTO ...
+( 입력값 받는 form DTO 는 DTO => ENtity 로 만드는거고
+응답용 DTO 는  ENtity => 응답용 DTO 로 만드는 과정 )
 
 
 
+=> 대신 마지막에 DB 에 넣을 때는 결국 Entity 로 넣어야하므로
+toEntity() 메소드 처리 과정이 필요
 
 
-
-
-
-
-
-
-
+- 사용자 입력을 받는건 DTO 니까 validation DTO에서 처리
+- Entity 는 DB랑 일치  

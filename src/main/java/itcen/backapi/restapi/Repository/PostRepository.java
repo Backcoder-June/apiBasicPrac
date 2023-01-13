@@ -47,9 +47,17 @@ public class PostRepository {
         PostEntity updateTarget = posts.get(id);
 
         // 제목 내용만 set 해줌. 나머지는 바뀐 값이 들어가도 적용 안됨 ( View 단에서 readonly 걸어두고 2차적 방어 및 효율성능 )
-        updateTarget.setTitle(postEntity.getTitle());
-        updateTarget.setContent(postEntity.getContent());
+        // 받아오는 DTO 도 어짜피 title / contents 만 쓸꺼면 따로 이 용도 DTO 만드는 것도 성능 개선
+
+        if (postEntity.getTitle() != null) {
+            updateTarget.setTitle(postEntity.getTitle());
+        }
+        if (postEntity.getContent() != null) {
+            updateTarget.setContent(postEntity.getContent());
+        }
+
         updateTarget.setModifiedDate(LocalDateTime.now()); // 게시물 수정 시 현재 DateTime 으로
+
         posts.put(updateTarget.getId(), updateTarget);
         return true;
     }
