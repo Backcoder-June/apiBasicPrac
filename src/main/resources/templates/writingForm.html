@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>writing</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+Writing Form
+
+
+
+<form action="posts" method="post">
+writer : <input type="text" name="writer" id="writer">
+title : <input type="text" name="title" id="title">
+content : <input type="text" name="content" id="content">
+<!--hashTags : <input type="text" name="hashTags" id="hashTags">-->
+<input id="writebtn" type="button" value="작성">
+</form>
+
+
+<script>
+
+
+
+
+
+
+
+
+    $("#writebtn").on("click", function(){
+
+let writer = $("#writer").val();
+let title = $("#title").val();
+let content = $("#content").val();
+let hashTags = $("#hashTags").val();
+
+    $.ajax({
+            type: "POST",
+            url: "/posts",
+            dataType: "json",
+            contentType: "application/json; charset=UTF-8",
+            data: JSON.stringify({
+                'writer' : $("#writer").val(),
+                'title' : $("#title").val(),
+                'content' : $("#content").val(),
+            }),
+            success: function(res){
+            alert("success")
+            }
+    }); // ajax
+    }); // onclick
+
+
+</script>
+
+
+
+
+</body>
+</html>

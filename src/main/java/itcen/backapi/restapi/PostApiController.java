@@ -68,9 +68,13 @@ public class PostApiController {
                 .body(onePostDTO + " - 최종 수정시간 : " + oneEntity.getModifiedDate());
     }
 
+
+
+
     // 게시물 등록
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createPost(@RequestBody PostDTO postDTO) {
+
         log.info("/posts/ register Posts");
         log.info("게시물 정보 : {}", postDTO);
 
