@@ -4,27 +4,20 @@ import itcen.backapi.restapi.Entities.PostDTO;
 import itcen.backapi.restapi.Entities.PostEntity;
 import itcen.backapi.restapi.Entities.PostResponseDTO;
 import itcen.backapi.restapi.Repository.PostRepository;
-import itcen.backapi.restapi.Repository.PostRepository2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class PostService {
-
     private final PostRepository postRepository;
-    private final PostRepository2 postRepository2;
-
-    public PostService(PostRepository postRepository, PostRepository2 postRepository2) {
-        this.postRepository = postRepository;
-        this.postRepository2 = postRepository2;
-    }
-
     @Autowired
-
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     public List<PostResponseDTO> getAllList() {
         List<PostEntity> allPosts = postRepository.findAll();
@@ -37,32 +30,38 @@ public class PostService {
         List<PostResponseDTO> collect = allPosts.stream()
                 .map(et -> new PostResponseDTO(et))
                 .collect(Collectors.toList());
-
         return collect;
     }
 
     public PostResponseDTO getDetail(Long id) {
-        PostEntity one = postRepository.findOne(id);
-        PostResponseDTO onePostDTO = new PostResponseDTO(one);
 
+        Optional<PostEntity> one = postRepository.findById(id);
+        PostResponseDTO onePostDTO = new PostResponseDTO(one.get());
         return onePostDTO;
     }
 
     public boolean insertPost(final PostDTO postDTO) {
         final PostEntity postEntity = postDTO.toEntity();
-        postRepository2.savePost(postEntity);
+        postRepository.save(postEntity);
         return true;
     }
 
 
     public boolean updatePost(final PostDTO postDTO) {
-        PostEntity editedEntity = postDTO.patchToEntity();
+        Long id = postDTO.getId();
+        Optional<PostEntity> originDTO = postRepository.findById(id);
 
-        return postRepository.update(postDTO.getId(), editedEntity);
+        originDTO.get().setTitle(postDTO.getTitle());
+        originDTO.get().setContent(postDTO.getContent());
+        originDTO.get().setWriter(postDTO.getWriter());
+
+        postRepository.save(originDTO.get());
+        return true;
     }
 
     public boolean deletePost(final Long id) {
-        return postRepository.delete(id);
+        postRepository.deleteById(id);
+        return true;
     }
 
 

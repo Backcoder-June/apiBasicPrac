@@ -135,8 +135,11 @@ class MemberRepositoryTest {
         });
         Optional<MemberEntity> newbyId = memberRepository.findById(userId); // set 해서 수정된 새로운 객체
 
+        // save 까지 해줘야 수정 완료 ( 영속성 )
+        MemberEntity newMember = memberRepository.save(newbyId.get());
+
         //then
-        assertEquals("닭강정", newbyId.get().getNickname());
-        assertEquals(FEMALE, newbyId.get().getGender());
+        assertEquals("닭강정", newMember.getNickname());
+        assertEquals(FEMALE, newMember.getGender());
     }
 }

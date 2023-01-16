@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -74,12 +75,13 @@ public class PostApiController {
         log.info("/posts/{} GET Request", id);
 
         try {
-            PostEntity oneEntity = postRepository.findOne(id);
+            Optional<PostEntity> oneEntity = postRepository.findById(id);
+//            PostEntity oneEntity = postRepository.findOne(id);
             PostResponseDTO onePostDTO = postService.getDetail(id);
 
             return ResponseEntity
                     .ok()
-                    .body(onePostDTO + " - 최종 수정시간 : " + oneEntity.getModifiedDate());
+                    .body(onePostDTO + " - 최종 수정시간 : " + oneEntity.get().getModifiedDate());
         } catch (Exception e) {
             return ResponseEntity
                     .notFound()
