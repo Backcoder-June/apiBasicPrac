@@ -25,6 +25,18 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation:2.7.3'
+	// spring doc
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
+
+	// JDBC 커넥터 ( mariadb - java )
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.8'
+
+	// spring boot starter data jpa
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+
 
 }
 

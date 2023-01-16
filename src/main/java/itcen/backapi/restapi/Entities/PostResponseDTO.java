@@ -26,7 +26,6 @@ public class PostResponseDTO {
         this.title = entity.getTitle();
         this.content = entity.getContent();
         this.regDate = entity.getCreatedDate();
-        this.hashtags = entity.getHashTags();
     }
 
 

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
-public class PostRepository {
+public class PostRepository  {
     // memory 저장소 생성
     private static final Map<Long, PostEntity> posts = new HashMap<>();
     // 전체조회
