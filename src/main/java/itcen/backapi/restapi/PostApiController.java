@@ -100,13 +100,20 @@ public class PostApiController {
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createPost(@Validated @RequestBody PostDTO postDTO, BindingResult bindingResult) {
 
+        // DTO 가 아예 null 일 경우
+        if (postDTO == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("게시물 정보가 없다 니 잘 못");
+        }
+
+        // DTO 를 주긴 했는데, validation 에서 걸린 경우. 잘못 준 경우 ( DTO validation )
         if (bindingResult.hasErrors()) {
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
 
             fieldErrors.forEach(err -> {
-                log.warn("너가 쓴게 잘못됬따 - {}", err.toString());
+                log.warn("DTO에 걸어둔 validation규칙에 맞게 써라 - {}", err.toString());
             });
-
             return ResponseEntity
                     .badRequest()
                     .body(fieldErrors);
@@ -115,16 +122,17 @@ public class PostApiController {
         log.info("/posts/ register Posts");
         log.info("게시물 정보 : {}", postDTO);
 
-        try {
-            boolean flag = postService.insertPost(postDTO);
 
-            return flag
-                    ? ResponseEntity.ok().body("INSERT-성공")
-                    : ResponseEntity.badRequest().body("등록 실패");
-        } catch (Exception e) {
+        // insert 하다가 발생할 오류 => 이건 서버잘못 => 500 internalServerError
+        try {
+            PostResponseDTO postResponseDTO = postService.insertPost(postDTO);
             return ResponseEntity
-                    .notFound()
-                    .build();
+                    .ok()
+                    .body(postResponseDTO);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .internalServerError()
+                    .body(e.getMessage());
         }
     }
 
@@ -137,14 +145,15 @@ public class PostApiController {
         log.info("수정된 entity 저장할 거 : {}", editedEntity);
 
         try {
-            boolean flag = postService.updatePost(postDTO);
-            return flag
-                    ? ResponseEntity.ok().body("PATCH 성공")
-                    : ResponseEntity.badRequest().body("PATCH 실패");
-        } catch (Exception e) {
+            PostResponseDTO postResponseDTO = postService.updatePost(postDTO);
             return ResponseEntity
-                    .notFound()
-                    .build();
+                    .ok()
+                    .body(postResponseDTO);
+        } catch (RuntimeException e) {
+            log.error("수정실패 - {}", e.getMessage());
+            return ResponseEntity
+                    .internalServerError().
+                    body("서버 문제가 발생 해 수정에 실패했습니다.");
         }
     }
 
@@ -152,14 +161,14 @@ public class PostApiController {
     public ResponseEntity<?> deletePost(@PathVariable Long id) {
         log.info(("posts/id DELETE request" ));
 
-
-        boolean flag = postService.deletePost(id);
-        return flag
-                ? ResponseEntity.ok().body("DELETE 성공")
-                : ResponseEntity.badRequest().body("DELETE 실패");
+        try {
+            postService.deletePost(id);
+            return ResponseEntity.ok().body(id + "번 게시물 삭제 성공");
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body("서버 에러로 DELETE 실패");
+        }
     }
 
-    // commit Test
-    //sad f
 
+//
 }

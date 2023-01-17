@@ -128,18 +128,145 @@ class MemberRepositoryTest {
 
         //when
         // JPA 에서 수정은 조회후  setter 로 변경
-        Optional<MemberEntity> byId = memberRepository.findById(userId);
-        byId.ifPresent(m -> {
+        Optional<MemberEntity> targetDummy = memberRepository.findById(userId);
+        System.out.println("fbi : " + targetDummy);
+        targetDummy.ifPresent(m -> {
             m.setNickname(newNickname);
             m.setGender(newGender);
         });
-        Optional<MemberEntity> newbyId = memberRepository.findById(userId); // set 해서 수정된 새로운 객체
+        System.out.println("after Set : " + targetDummy);
+//        Optional<MemberEntity> newbyId = memberRepository.findById(userId); // set 해서 수정된 새로운 객체
 
         // save 까지 해줘야 수정 완료 ( 영속성 )
-        MemberEntity newMember = memberRepository.save(newbyId.get());
+        MemberEntity newMember = memberRepository.save(targetDummy.get());
 
         //then
         assertEquals("닭강정", newMember.getNickname());
         assertEquals(FEMALE, newMember.getGender());
+    }
+
+
+    @Test
+    @DisplayName("findbyGender 메소드 테스트")
+    @Transactional
+    @Rollback
+    void findByGenderTEst() {
+        //given
+        Gender gender = FEMALE;
+
+        //when
+        List<MemberEntity> list = memberRepository.findByGender(gender);
+
+        //then
+        list.forEach(m -> {
+            System.out.println(m);
+            assertTrue(m.getGender() == FEMALE);
+        });
+    }
+
+    @Test
+    @DisplayName("findByEmailAndGender 테스트")
+    @Transactional
+    @Rollback
+    void findByEmailAndGenderTest() {
+        //given
+        String email = "abc4321";
+        Gender gender = MALE;
+
+        //when
+        List<MemberEntity> byEmailAndGender = memberRepository.findByEmailAndGender(email, gender);
+
+        //then
+        byEmailAndGender.forEach(m -> {
+            System.out.println(m);
+            assertTrue(m.getGender() == MALE);
+        });
+    }
+
+    @Test
+    @DisplayName("jpa containing 테스트")
+    @Transactional
+    @Rollback
+    void findContainingTest() {
+        //given
+        String nickname = "박";
+        //when
+        List<MemberEntity> byNicknameContaining = memberRepository.findByNicknameContaining(nickname);
+
+        //then
+        byNicknameContaining.forEach(m -> {
+            System.out.println(m);
+            assertTrue(m.getNickname().contains(nickname));
+        });
+    }
+
+
+    @Test
+    @DisplayName("JPQL 테스트")
+    @Transactional
+    @Rollback
+    void findByemail() {
+        //given
+        String email = "zzz1234";
+
+        //when
+        MemberEntity byEmail = memberRepository.findByEmail(email);
+
+        //then
+        assertTrue(byEmail.getPassword().equals("1234"));
+
+    }
+
+    @Test
+    @DisplayName("JPQL 테스트2")
+    @Transactional
+    @Rollback
+    void findByNicknameAndGender() {
+        //given
+        String nickname = "궁예";
+        Gender gender = MALE;
+
+        //when
+        MemberEntity byEmail = memberRepository.findByNickNameAndGender(nickname, gender);
+
+        //then
+        assertTrue(byEmail.getEmail().equals("abc4321"));
+    }
+
+
+    @Test
+    @DisplayName("JPQL 테스트2")
+    @Transactional
+    @Rollback
+    void findByNickNameContaining() {
+        //given
+        String nickname = "박";
+
+        //when
+        List<MemberEntity> byNicknameContaining = memberRepository.findByNicknameContaining(nickname);
+
+        //then
+        System.out.println(byNicknameContaining);
+
+        for (MemberEntity memberEntity : byNicknameContaining) {
+            assertTrue(memberEntity.getNickname().contains("박"));
+        }
+    }
+
+
+    @Test
+    @DisplayName("nativeQuery 테스트")
+    @Transactional
+    @Rollback
+    void nativeQueryselect() {
+        //given
+        String nickname = "궁예";
+
+        //when
+        MemberEntity byNicknameContaining = memberRepository.getmembernick(nickname);
+
+        //then
+        System.out.println(byNicknameContaining);
+        assertEquals("궁예", byNicknameContaining.getNickname());
     }
 }

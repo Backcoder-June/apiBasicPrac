@@ -47,7 +47,6 @@ class PostRepositoryTest {
     }
 
 
-
     @Test
     @DisplayName("게시물 insert 테스트")
     @Rollback
@@ -96,7 +95,10 @@ class PostRepositoryTest {
                 .build();
 
         //when
-        PostEntity targetDummy = postRepository.findByTitle("마지막더미");
+        PostEntity targetDummy = postRepository.findById(3L)
+                .orElseThrow(()->   //null 처리 Optional 에서 꺼내쓰기
+                        new RuntimeException(3L + "번 게시물이 존재하지 않습니다.")
+                );
 
         targetDummy.setWriter(newpost.getWriter());
         targetDummy.setContent(newpost.getContent());
@@ -104,13 +106,26 @@ class PostRepositoryTest {
         postRepository.save(targetDummy);
 
         //then
-        assertEquals("새로운 내용",postRepository.findByTitle("마지막더미").getContent());
+        assertEquals("새로운 내용", postRepository.findById(3L).get().getContent());
     }
 
+    @Test
+    @DisplayName("게시물 삭제 테스트")
+    @Transactional
+    @Rollback
+    void deletePostTest() {
+        // given
+        // 3 dummies
 
+        //when
+        postRepository.deleteById(2L);
 
+        //then
+        PostEntity deletedTarget = postRepository.findById(2L).orElse(null);
+        assertNull(deletedTarget);
+        assertEquals(2, postRepository.findAll().size());
 
-
+    }
 }
 
 
