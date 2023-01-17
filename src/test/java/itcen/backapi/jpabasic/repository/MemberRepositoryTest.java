@@ -269,4 +269,25 @@ class MemberRepositoryTest {
         System.out.println(byNicknameContaining);
         assertEquals("궁예", byNicknameContaining.getNickname());
     }
+
+
+    @Test
+    @DisplayName("insert modifying 테스트")
+    @Transactional
+    @Rollback
+    void modifyingInsertTest() {
+        //given
+        MemberEntity nicnic = MemberEntity.builder()
+                .email("eamasdfsad@sdaf")
+                .nickname("nicnic")
+                .password("11221")
+                .build();
+        //when
+        memberRepository.insertMember(nicnic);
+        //then
+        System.out.println("새로 insert한 객체 : "+memberRepository.findById(4L));
+        assertEquals(4, memberRepository.findAll().size());
+
+
+    }
 }

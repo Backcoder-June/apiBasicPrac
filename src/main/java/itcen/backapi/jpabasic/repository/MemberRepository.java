@@ -3,6 +3,7 @@ package itcen.backapi.jpabasic.repository;
 import itcen.backapi.jpabasic.entity.Gender;
 import itcen.backapi.jpabasic.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,27 +20,27 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
     // 더 복잡해지면 Mybatis / nativeQuery 사용
 
     List<MemberEntity> findByGender(Gender gender);
+
     List<MemberEntity> findByEmailAndGender(String email, Gender gender);
-    List<MemberEntity> findByNicknameContaining (String nickname);
+
+    List<MemberEntity> findByNicknameContaining(String nickname);
 
 
     // JPQL
     // select 별칭 from 엔티티 as 별치 where 별칭.필드명
     @Query("SELECT m from MemberEntity m where m.email=:email")
-    MemberEntity findByEmail(@Param("email")String email);
+    MemberEntity findByEmail(@Param("email") String email);
 
     @Query("SELECT m from MemberEntity m where m.nickname=:nickname AND m.gender=:gender")
-    MemberEntity findByNickNameAndGender(@Param("nickname")String nickname, @Param("gender")Gender gender);
+    MemberEntity findByNickNameAndGender(@Param("nickname") String nickname, @Param("gender") Gender gender);
 
     @Query("SELECT m FROM MemberEntity m where m.nickname like %:nickname%")
-    List<MemberEntity> getMembersByNickNameContaining(@Param("nickname")String nickname);
+    List<MemberEntity> getMembersByNickNameContaining(@Param("nickname") String nickname);
 
     @Query(value = "SELECT * FROM jpamember where nickname=:nickname", nativeQuery = true)
-    MemberEntity getmembernick(@Param("nickname")String nick);
+    MemberEntity getmembernick(@Param("nickname") String nick);
 
-
-
-
-
-
+    @Modifying
+    @Query(value = "INSERT INTO jpamember(email, nickname, password) VALUES(:#{#memberEntity.email}, :#{#memberEntity.nickname}, :#{#memberEntity.password})", nativeQuery = true)
+    void insertMember(@Param("memberEntity") MemberEntity memberEntity);
 }

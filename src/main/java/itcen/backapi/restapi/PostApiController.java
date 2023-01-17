@@ -2,9 +2,7 @@ package itcen.backapi.restapi;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
-import itcen.backapi.restapi.Entities.PostDTO;
-import itcen.backapi.restapi.Entities.PostEntity;
-import itcen.backapi.restapi.Entities.PostResponseDTO;
+import itcen.backapi.restapi.Entities.*;
 import itcen.backapi.restapi.Repository.PostRepository;
 import itcen.backapi.restapi.Service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -50,11 +48,12 @@ public class PostApiController {
 
     // 전체 게시물
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<?> getAllPosts() {
+    public ResponseEntity<?> getAllPosts(PageRequestDTO pageRequestDTO) {
         log.info("/posts GET Request");
+        log.info("page정보 - {}", pageRequestDTO);
 
         try {
-            List<PostResponseDTO> allList = postService.getAllList();
+            PostListResponseDTO allList = postService.getAllList(pageRequestDTO);
 
             return ResponseEntity
                     .ok()

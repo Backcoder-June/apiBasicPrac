@@ -1,10 +1,12 @@
 package itcen.backapi.restapi.Service;
 
-import itcen.backapi.restapi.Entities.PostDTO;
-import itcen.backapi.restapi.Entities.PostEntity;
-import itcen.backapi.restapi.Entities.PostResponseDTO;
+import itcen.backapi.restapi.Entities.*;
 import itcen.backapi.restapi.Repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,18 +21,33 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public List<PostResponseDTO> getAllList() {
-        List<PostEntity> allPosts = postRepository.findAll();
+    public PostListResponseDTO getAllList(PageRequestDTO pageRequestDTO) {
+
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage() - 1, pageRequestDTO.getSizePerPage(),
+                Sort.Direction.DESC, "createdDate"
+        );
+
+        final Page<PostEntity> pageData = postRepository.findAll(pageable);
+        List<PostEntity> allPosts = pageData.getContent();
 
 //        if (allPosts.isEmpty()) {
 //            throw new RuntimeException("조회 결과 Empty!");
 //        }
 
         // Entity => DTO ( 필요한 정보만 클라이언트에 필요한 꼴로 보내줌 )
-        List<PostResponseDTO> collect = allPosts.stream()
+        List<PostResponseDTO> responseDTOList = allPosts.stream()
                 .map(et -> new PostResponseDTO(et))
                 .collect(Collectors.toList());
-        return collect;
+
+
+        PostListResponseDTO listResponseDTO = PostListResponseDTO.builder()
+                .count(responseDTOList.size())
+                .pageInfo(new PageResponseDTO<PostEntity>(pageData))
+                .posts(responseDTOList)
+                .build();
+
+        return listResponseDTO;
     }
 
     public PostResponseDTO getDetail(Long id) {
@@ -65,12 +82,6 @@ public class PostService {
     public void deletePost(final Long id) throws RuntimeException {
         postRepository.deleteById(id);
     }
-
-
-
-
-
-
 }
 
 
