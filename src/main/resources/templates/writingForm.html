@@ -18,24 +18,89 @@ content : <input type="text" name="content" id="content">
 <!--hashTags : <input type="text" name="hashTags" id="hashTags">-->
 <input id="writebtn" type="button" value="작성">
 </form>
-
-
 <br>
 
-<a href="/posts">전체게시물</a>
+<input id="allpostbtn" type="button" value="전체게시물">
+<br>
+<br>
+<hr>
+<div id="allposts"></div>
 
+<br>
+<hr>
+<div id="paging"></div>
+
+
+<hr>
 
 <script>
 
 
+var basicPage = 1;
+var page = 1;
+// 전체게시물 클릭 시
+$(function pagingTest(){
+ $("#allpostbtn").on("click", function(){
+    page = page;
+    alert(page);
+    $.ajax({
+        type: "GET",
+        url: "/posts",
+        dataType: "json",
+        contentType: "application/json; charset=UTF-8",
+        data: {
+            'page': page
+        },
+
+        success: function(res){
+            var count = parseInt(res.count);
+            var totalCount = parseInt(res.pageInfo.totalCount);
+            var currentPage = parseInt(res.pageInfo.currentPage);
+            var startPage = parseInt(res.pageInfo.startPage);
+            var endPage = parseInt(res.pageInfo.endPage);
+
+            for(var i = 0; i < count; i++) {
+                $("#allposts").append("작성자 : " + res.posts[i].author + "<br>");
+                $("#allposts").append("제목 : " + res.posts[i].title + "<br>");
+                $("#allposts").append("내용 : " + res.posts[i].content);
+                $("#allposts").append("<br><hr>");
+            } // for
+
+     for(let j = startPage; j <= endPage; j++) {
+                $("#paging").append('<input id="pagingNum' + j + '" type="button" value=' + j + '>');
+            } // for
+
+             for(let j = startPage; j <= endPage; j++) {
+                $("#pagingNum" + j).on("click", function(){
+                var page = j;
+                pagingTest(); //재귀? 어떻게쓰지
+                }); // onclick
+}//for
+
+
+        } //success
+    }); //ajax
+
+
+
+}); // onclick
+}) //function
 
 
 
 
 
 
-    $("#writebtn").on("click", function(){
 
+
+// 페이지 클릭 시
+
+
+
+
+
+// 글 작성
+$("#writebtn").on("click", function(){
 let writer = $("#writer").val();
 let title = $("#title").val();
 let content = $("#content").val();
@@ -49,7 +114,7 @@ let hashTags = $("#hashTags").val();
             data: JSON.stringify({
                 'writer' : $("#writer").val(),
                 'title' : $("#title").val(),
-                'content' : $("#content").val(),
+                'content' : $("#content").val()
             }),
             success: function(res){
             alert("success")

@@ -22,7 +22,6 @@ public class PostService {
     }
 
     public PostListResponseDTO getAllList(PageRequestDTO pageRequestDTO) {
-
         Pageable pageable = PageRequest.of(
                 pageRequestDTO.getPage() - 1, pageRequestDTO.getSizePerPage(),
                 Sort.Direction.DESC, "createdDate"
