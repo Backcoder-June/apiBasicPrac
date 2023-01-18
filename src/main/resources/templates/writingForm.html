@@ -31,16 +31,51 @@ content : <input type="text" name="content" id="content">
 <div id="paging"></div>
 
 
-<hr>
 
 <script>
 
 
-var basicPage = 1;
-var page = 1;
+var page = 2;
+
 // 전체게시물 클릭 시
 $(function pagingTest(){
- $("#allpostbtn").on("click", function(){
+
+$("#allpostbtn").on("click", function(){
+   $.ajax({
+        type: "GET",
+        url: "/posts",
+        dataType: "json",
+        contentType: "application/json; charset=UTF-8",
+        data: {
+            'page': 1
+        },
+
+        success: function(res){
+            var count = parseInt(res.count);
+            var totalCount = parseInt(res.pageInfo.totalCount);
+            var currentPage = parseInt(res.pageInfo.currentPage);
+            var startPage = parseInt(res.pageInfo.startPage);
+            var endPage = parseInt(res.pageInfo.endPage);
+
+            for(var i = 0; i < count; i++) {
+                $("#allposts").append("작성자 : " + res.posts[i].author + "<br>");
+                $("#allposts").append("제목 : " + res.posts[i].title + "<br>");
+                $("#allposts").append("내용 : " + res.posts[i].content);
+                $("#allposts").append("<br><hr>");
+            } // for
+
+     for(let j = startPage; j <= endPage; j++) {
+                $("#paging").append('<input id="pagingNum' + j + '" type="button" value=' + j + '>');
+            } // for
+
+        } //success
+    }); //ajax
+});
+
+
+ for(let j = 1; j <= 3; j++) {
+ $("#pagingNum" + j).on("click", function(){
+ alert("page : j");
     page = page;
     alert(page);
     $.ajax({
@@ -70,20 +105,14 @@ $(function pagingTest(){
                 $("#paging").append('<input id="pagingNum' + j + '" type="button" value=' + j + '>');
             } // for
 
-             for(let j = startPage; j <= endPage; j++) {
-                $("#pagingNum" + j).on("click", function(){
-                var page = j;
-                pagingTest(); //재귀? 어떻게쓰지
-                }); // onclick
-}//for
+
 
 
         } //success
     }); //ajax
-
-
-
 }); // onclick
+} // for
+
 }) //function
 
 

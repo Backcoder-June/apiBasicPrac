@@ -1,6 +1,7 @@
 package itcen.backapi.restapi.Service;
 
 import itcen.backapi.restapi.Entities.*;
+import itcen.backapi.restapi.Repository.HashTagRepository;
 import itcen.backapi.restapi.Repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,7 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,10 +19,14 @@ import java.util.stream.Collectors;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final HashTagRepository hashTagRepository;
+
     @Autowired
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, HashTagRepository hashTagRepository) {
         this.postRepository = postRepository;
+        this.hashTagRepository = hashTagRepository;
     }
+
 
     public PostListResponseDTO getAllList(PageRequestDTO pageRequestDTO) {
         Pageable pageable = PageRequest.of(
@@ -56,9 +63,26 @@ public class PostService {
         return onePostDTO;
     }
 
+    @Transactional
     public PostResponseDTO insertPost(final PostDTO postDTO) {
         final PostEntity postEntity = postDTO.toEntity(); //받아서 Entity 로 만들어서 DB 저장하고
         PostEntity savedEntity = postRepository.save(postEntity); //save : 예외 발생할 수 있는 메소드임 ( throws 있으면 )
+
+        // hashtag db 저장
+        List<String> hashTags = postDTO.getHashTagEntity();
+
+        // hashtag 문자열 리스트 => 문자열 추출 => hashtag Entity build => db 저장
+        List<HashTagEntity> hashTagEntityList = new ArrayList<>();
+        for (String ht : hashTags) {
+            HashTagEntity tagEntity = HashTagEntity.builder()
+                    .postEntity(savedEntity)
+                    .tagName(ht)
+                    .build();
+            HashTagEntity savedTag = hashTagRepository.save(tagEntity);
+            hashTagEntityList.add(savedTag);
+        }
+        savedEntity.setHashtags(hashTagEntityList); //심어주기
+
         return new PostResponseDTO(savedEntity); //응답줄 때는 다시 응답용 DTO 로 만들어서 보내주고
     }
 

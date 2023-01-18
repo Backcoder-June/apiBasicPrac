@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Getter @Setter @ToString
@@ -26,6 +27,10 @@ public class PostResponseDTO {
         this.title = entity.getTitle();
         this.content = entity.getContent();
         this.regDate = entity.getCreatedDate();
+        this.hashtags = entity.getHashtags()
+                .stream()
+                .map(HashTagEntity::getTagName)
+                .collect(Collectors.toList());
     }
 
 

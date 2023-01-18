@@ -25,6 +25,8 @@ public class PostDTO {  // 실제로 조작할 필요한 데이터들로만 추�
     @NotBlank
     private String content;
 
+    private List<String> hashTagEntity;
+
 
     //toEntity
     public PostEntity toEntity() {

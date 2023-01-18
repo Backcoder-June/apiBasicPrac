@@ -6,6 +6,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter @Getter @ToString
 @NoArgsConstructor @AllArgsConstructor
@@ -20,6 +22,11 @@ public class PostEntity {
     @Column(name = "title")
     private String title;
     private String content;
+
+    // 양방향 설정
+    @OneToMany(mappedBy = "postEntity")
+    private List<HashTagEntity> hashtags = new ArrayList<>();
+
 
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     //=> Validation 은 Entity 에서 하지 말라. Entity는 DB랑 대응되는 작업만 하는 것
